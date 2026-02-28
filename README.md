@@ -39,15 +39,13 @@ Reports are saved to `~/daily-reports/YYYY-MM-DD.md` by default.
 
 ## 📋 Tasks by Project
 
-### team-dashboard
-_(3 sessions, ~3h 20m)_
+### team-dashboard — 3 sessions, 24 prompts
 
 - [x] Investigate and fix slow dashboard loading (N+1 query in user list endpoint)
 - [x] Review PR #248 — notification preference migration
 - [-] Add real-time updates via WebSocket (remaining: reconnection logic)
 
-### personal-blog
-_(1 session, ~50m)_
+### personal-blog — 1 session, 8 prompts
 
 - [x] RSS feed generation with full-text content
 - [-] Dark mode toggle (remaining: system preference detection)

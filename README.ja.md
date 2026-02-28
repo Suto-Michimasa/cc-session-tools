@@ -39,15 +39,13 @@ claude -p "/daily-report" --output-format text > ~/daily-reports/$(date +%Y-%m-%
 
 ## 📋 プロジェクト別タスク
 
-### team-dashboard
-_(3 sessions, ~3h 20m)_
+### team-dashboard — 3 sessions, 24 prompts
 
 - [x] ダッシュボード表示遅延の調査・修正（ユーザー一覧 API の N+1 クエリ解消）
 - [x] PR #248 レビュー — 通知設定のマイグレーション
 - [-] WebSocket によるリアルタイム更新（残: 再接続ロジック）
 
-### personal-blog（個人開発）
-_(1 session, ~50m)_
+### personal-blog（個人開発） — 1 session, 8 prompts
 
 - [x] RSS フィードの全文配信対応
 - [-] ダークモード切り替え（残: OS 設定の自動検出）
