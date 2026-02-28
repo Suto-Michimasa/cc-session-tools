@@ -22,8 +22,7 @@ Group related prompts into a single task. Use these status markers:
 - [ ] Blocked (note reason in parentheses)
 -->
 
-### {project_name}
-_({session_count} sessions, ~{duration})_
+### {project_name} — {session_count} sessions, {prompt_count} prompts
 
 ## 💡 Learnings
 <!--

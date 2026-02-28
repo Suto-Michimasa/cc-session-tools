@@ -31,11 +31,11 @@ Replace `{{date}}` with the target date.
 grep -rl '"YYYY-MM-DD' ~/.claude/projects/*/*.jsonl
 ```
 
-Group results by project directory. For each matching `.jsonl`, extract lines containing the target date via `grep`. From those lines, collect user prompts (`"type":"user"`) and tool calls. Skip sessions with no user messages or whose first line is `type:"queue-operation"` (subagents).
+Group results by project directory. For each matching `.jsonl`, extract lines containing the target date via `grep`. From those lines, collect user prompts (`"type":"user"`) and tool calls. Skip sessions with no user messages or whose first line is `type:"queue-operation"` (subagents). Count the number of user messages per session as `{prompt_count}`.
 
 ### 5. Generate report
 
-Follow the template's HTML comments (`<!-- -->`) as instructions for each section. Replace `{project_name}`, `{session_count}`, `{duration}` with values from the data.
+Follow the template's HTML comments (`<!-- -->`) as instructions for each section. Replace `{project_name}`, `{session_count}`, `{prompt_count}` with values from the data.
 
 ### 6. Write output
 

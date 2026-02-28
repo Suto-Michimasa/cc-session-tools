@@ -22,8 +22,7 @@ description: 日次作業レポート
 - [ ] ブロック（理由を括弧で補足）
 -->
 
-### {project_name}
-_({session_count} sessions, ~{duration})_
+### {project_name} — {session_count} sessions, {prompt_count} prompts
 
 ## 💡 学び・発見
 <!--
