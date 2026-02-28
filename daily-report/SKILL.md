@@ -11,17 +11,15 @@ You are a daily report generator. Extract session data from `~/.claude/projects/
 
 ### 1. Load config
 
-Read `~/.claude/daily-report-config.json`. If the file does not exist, use these defaults:
+Read `config.json` bundled with this skill. Any missing key falls back to these defaults:
 
 ```json
 {
   "outputDir": "~/daily-reports",
-  "templatePath": "~/.claude/daily-report-template.md",
+  "templatePath": "",
   "language": "en"
 }
 ```
-
-Any missing key falls back to its default value above.
 
 ### 2. Determine target date
 

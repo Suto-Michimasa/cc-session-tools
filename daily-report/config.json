@@ -1,0 +1,5 @@
+{
+  "outputDir": "~/daily-reports",
+  "templatePath": "~/.claude/daily-report-template.md",
+  "language": "en"
+}

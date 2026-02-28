@@ -7,12 +7,13 @@ It scans `~/.claude/projects/` for sessions on the target date, extracts what yo
 ## Install
 
 ```bash
-# Copy the skill into Claude Code
 git clone https://github.com/Suto-michimasa/cc-daily-report.git
 cp -r cc-daily-report/daily-report ~/.claude/skills/daily-report
 ```
 
-Or use a symlink to get updates via `git pull`:
+This copies the skill, config, and all templates at once. Edit `~/.claude/skills/daily-report/config.json` to customize output directory, language, etc.
+
+To get updates via `git pull` instead, use a symlink:
 
 ```bash
 ln -s /path/to/cc-daily-report/daily-report ~/.claude/skills/daily-report
@@ -70,12 +71,12 @@ _(1 session, ~50m)_
 
 ## Configuration
 
-Create `~/.claude/daily-report-config.json` to customize behavior:
+Edit `~/.claude/skills/daily-report/config.json`:
 
 ```json
 {
   "outputDir": "~/daily-reports",
-  "templatePath": "~/.claude/daily-report-template.md",
+  "templatePath": "",
   "language": "en"
 }
 ```
@@ -83,8 +84,8 @@ Create `~/.claude/daily-report-config.json` to customize behavior:
 | Key | Default | Description |
 |---|---|---|
 | `outputDir` | `~/daily-reports` | Directory to save generated reports |
-| `templatePath` | `~/.claude/daily-report-template.md` | Path to custom template |
-| `language` | `en` | Template language — selects `templates/{language}.md` when no custom templatePath is set |
+| `templatePath` | `""` | Path to custom template (empty = use bundled template) |
+| `language` | `en` | Template language — selects `templates/{language}.md` when templatePath is empty |
 
 All keys are optional. Missing keys fall back to defaults.
 
@@ -104,17 +105,6 @@ cp cc-daily-report/daily-report/templates/default.md ~/.claude/daily-report-temp
 ```
 
 Create your own template following the same format (YAML frontmatter + Markdown with `<!-- -->` instructions for Claude).
-
-## Project structure
-
-```
-cc-daily-report/
-└── daily-report/              # Skill (copy or symlink to ~/.claude/skills/)
-    ├── SKILL.md               # Skill definition
-    └── templates/
-        ├── default.md         # English (default)
-        └── ja.md              # Japanese
-```
 
 ## License
 
