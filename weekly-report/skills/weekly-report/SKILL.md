@@ -43,7 +43,7 @@ Gather per-project metrics for the entire target week from session data:
 grep -rl 'YYYY-MM-DD' ~/.claude/projects/*/*.jsonl
 ```
 
-Run for each date in the target week. Group results by project directory. For each project, count sessions (files) and user messages (`"type":"human"` or `"role":"user"`). Skip subagent sessions (first line `type:"queue-operation"`). Count the number of distinct dates each project appears on as `{active_days}`.
+Run for each date in the target week. Group results by project directory. For each project, count sessions (files) and user messages (`"type":"user"`). Skip subagent sessions (first line `type:"queue-operation"`). Count the number of distinct dates each project appears on as `{active_days}`.
 
 This provides `{project_name}`, `{session_count}`, `{prompt_count}`, `{active_days}` for each project regardless of whether daily reports exist.
 

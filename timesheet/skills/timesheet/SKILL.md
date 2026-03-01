@@ -36,7 +36,7 @@ For each `.jsonl` file in `~/.claude/projects/*/`:
 3. Sort timestamps chronologically.
 4. Split into work blocks: if the gap between consecutive timestamps exceeds **30 minutes** (idle threshold), start a new block.
 5. Sum block durations. Round to the nearest **15 minutes** (minimum 15 minutes if any user messages exist).
-6. Count user messages and active dates.
+6. Count user messages (`"type":"user"`) and active dates.
 
 Group results by project directory.
 

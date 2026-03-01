@@ -18,7 +18,7 @@ Each session file is a JSONL where each line is a JSON object. User messages loo
 ```
 
 Key fields:
-- `type`: `"user"` (new format) or `"human"` (old format) for user messages, `"assistant"` for responses
+- `type`: `"user"` for user messages, `"assistant"` for responses
 - `message.content`: string, or array of `{"type":"text","text":"..."}` objects
 - `timestamp`: ISO 8601 format
 - First line `type: "queue-operation"` indicates a subagent session (skip these)
@@ -65,7 +65,7 @@ Then, use a **Python script** to score, extract, and format results in one pass.
 
 1. **Score** each candidate file by how many distinct keywords it contains.
 2. **Skip** subagent sessions (first line has `"type":"queue-operation"`).
-3. **Parse** each line as JSON. Find user messages where `type` is `"human"` or `"user"`.
+3. **Parse** each line as JSON. Find user messages where `type` is `"user"`.
 4. **Filter noise** — skip messages where `message.content` is longer than 2000 characters (skill/system prompt expansions).
 5. **Extract** the first matching user message per session, along with its `timestamp`.
 6. **Capture context** — also extract the next `"assistant"` message content (truncated to 200 chars) as context.
