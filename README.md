@@ -7,10 +7,10 @@ It scans `~/.claude/projects/` for session data and provides daily/weekly report
 ## Install
 
 ```bash
-# Register the marketplace
-/plugin marketplace add github:Suto-Michimasa/cc-session-tools
+# Add the marketplace
+/plugin marketplace add Suto-Michimasa/cc-session-tools
 
-# Install all
+# Install all plugins
 /plugin install daily-report@session-tools
 /plugin install weekly-report@session-tools
 /plugin install session-search@session-tools
@@ -88,7 +88,7 @@ Reads existing daily reports if available, otherwise falls back to raw session d
 Search across all sessions by keyword.
 
 ```bash
-> /session-search "N+1 クエリ"
+> /session-search "N+1 query fix"
 > /session-search migration
 ```
 

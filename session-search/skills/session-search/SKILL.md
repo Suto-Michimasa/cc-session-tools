@@ -32,7 +32,7 @@ Key fields:
 ```
 Usage: /session-search <query>
 Example: /session-search "Slack API integration"
-Example: /session-search "N+1 query fix"
+Example: /session-search "N+1 query optimization"
 ```
 
 Extract the search query. Remove surrounding quotes if present.
