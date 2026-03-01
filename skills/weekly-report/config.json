@@ -1,0 +1,6 @@
+{
+  "dailyReportDir": "~/daily-reports",
+  "outputDir": "~/weekly-reports",
+  "templatePath": "",
+  "language": "en"
+}

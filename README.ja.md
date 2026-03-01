@@ -1,110 +1,130 @@
-# cc-daily-report
+# cc-session-tools
 
-Claude Code のセッション履歴から日報を自動生成するプラグインです。
+Claude Code のセッション履歴を活用した生産性トラッキングプラグインです。
 
-`~/.claude/projects/` 配下のセッションを対象日で絞り込み、構造化された Markdown レポートを出力します。
+`~/.claude/projects/` 配下のセッションデータから、日報・週報の生成、セッション検索、タイムシート推定を提供します。
 
 ## インストール
 
 ```bash
-claude plugin install github:Suto-Michimasa/cc-daily-report
-claude plugin enable daily-report
+claude plugin install github:Suto-Michimasa/cc-session-tools
+claude plugin enable session-tools
 ```
 
 <details>
 <summary>手動インストール（プラグインシステムを使わない場合）</summary>
 
 ```bash
-git clone https://github.com/Suto-Michimasa/cc-daily-report.git
-cp -r cc-daily-report/skills/daily-report ~/.claude/skills/daily-report
+git clone https://github.com/Suto-Michimasa/cc-session-tools.git
+cp -r cc-session-tools/skills/* ~/.claude/skills/
 ```
 
 </details>
 
-出力先や言語を変更したい場合は `config.json` を編集してください。
+## スキル一覧
 
-## 使い方
+### `/daily-report` — 日報生成
+
+セッション履歴から構造化された日報を生成します。
 
 ```bash
-# Claude Code 内で — 今日の日報を生成
 > /daily-report
-
-# 日付を指定
 > /daily-report 2025-06-15
-
-# headless 実行
-claude -p "/daily-report" --output-format text > ~/daily-reports/$(date +%Y-%m-%d).md
 ```
 
-レポートはデフォルトで `~/daily-reports/YYYY-MM-DD.md` に保存されます。
+デフォルトで `~/daily-reports/YYYY-MM-DD.md` に保存されます。`config.json` で出力先、言語、テンプレートをカスタマイズできます。
 
-## 出力例
+<details>
+<summary>出力例</summary>
 
 ```markdown
 # Daily Report — 2025-06-15
 
-## 🏆 今日のハイライト
+## 今日のハイライト
 - ダッシュボードの読み込み時間を 3.2s → 0.8s に改善（N+1 クエリの解消）
-- 通知システムの API 設計をチームでレビューし、方針が確定
 
-## 📋 プロジェクト別タスク
+## プロジェクト別タスク
 
 ### team-dashboard — 3 sessions, 24 prompts
-
-- [x] ダッシュボード表示遅延の調査・修正（ユーザー一覧 API の N+1 クエリ解消）
-- [x] PR #248 レビュー — 通知設定のマイグレーション
+- [x] ダッシュボード表示遅延の調査・修正
 - [-] WebSocket によるリアルタイム更新（残: 再接続ロジック）
 
-### personal-blog（個人開発） — 1 session, 8 prompts
+## 学び・発見
+- PostgreSQL の `EXISTS` サブクエリは `JOIN + DISTINCT` より「存在チェック」に強い
 
-- [x] RSS フィードの全文配信対応
-- [-] ダークモード切り替え（残: OS 設定の自動検出）
-- [ ] OGP 画像の自動生成（ブロック: ライブラリ選定）
-
-## 💡 学び・発見
-- PostgreSQL の `EXISTS` サブクエリは `JOIN + DISTINCT` より「存在チェック」に強い — クエリ 1.2s → 40ms に短縮
-- 通知 API の設計では、配信チャネル（email/push/in-app）と通知タイプを分離するとスキーマの拡張性が上がる
-
-## ⏭️ ネクストアクション
-- WebSocket 再接続に exponential backoff を実装（team-dashboard）
-- OGP 画像生成ライブラリの選定: @vercel/og vs satori（personal-blog）
-- 水曜のチーム定例でダッシュボード改善のデモ準備
+## ネクストアクション
+- WebSocket 再接続に exponential backoff を実装
 ```
+
+</details>
+
+### `/weekly-report` — 週報生成
+
+日報を集約して週次サマリーを生成します。1on1 やチームミーティングの準備に。
+
+```bash
+> /weekly-report
+> /weekly-report 2026-W09
+> /weekly-report 2026-02-24..2026-02-28
+```
+
+既存の日報があればそこから読み込み、なければセッションデータから直接生成します。`~/weekly-reports/YYYY-Www.md` に保存されます。
+
+### `/session-search` — セッション検索
+
+全セッションをキーワードで横断検索します。
+
+```bash
+> /session-search "N+1 クエリ"
+> /session-search migration
+```
+
+結果はプロジェクト別にグループ化され、前後のコンテキスト付きで会話内に表示されます。
+
+### `/timesheet` — 作業時間推定
+
+セッションのタイムスタンプからプロジェクト別の作業時間を推定します。
+
+```bash
+> /timesheet
+> /timesheet 2026-02-14
+> /timesheet 2026-W09
+> /timesheet 2026-02-01..2026-02-28
+```
+
+メッセージのタイムスタンプを基に計算し、30 分超のアイドル時間で作業ブロックを分割、15 分単位で丸めます。
 
 ## 設定
 
-スキルディレクトリ内の `config.json` を編集してカスタマイズできます:
+`daily-report` と `weekly-report` はスキルディレクトリ内に `config.json` があります。`session-search` と `timesheet` は設定不要（最適なデフォルト値が組み込み済み）です。
 
-```json
-{
-  "outputDir": "~/daily-reports",
-  "templatePath": "",
-  "language": "ja"
-}
-```
+### daily-report の設定
 
 | キー | デフォルト | 説明 |
 |---|---|---|
 | `outputDir` | `~/daily-reports` | レポートの出力先ディレクトリ |
-| `templatePath` | `""` | カスタムテンプレートのパス（空 = スキル内蔵テンプレートを使用） |
-| `language` | `en` | テンプレート言語 — templatePath が空のとき `templates/{language}.md` を選択 |
+| `templatePath` | `""` | カスタムテンプレートのパス（空 = 内蔵テンプレートを使用） |
+| `language` | `en` | テンプレート言語 — `templates/{language}.md` を選択 |
 
-すべてのキーは省略可能です。未指定のキーはデフォルト値が使われます。
+### weekly-report の設定
+
+| キー | デフォルト | 説明 |
+|---|---|---|
+| `dailyReportDir` | `~/daily-reports` | 既存日報の参照先ディレクトリ |
+| `outputDir` | `~/weekly-reports` | 週報の出力先ディレクトリ |
+| `templatePath` | `""` | カスタムテンプレートのパス |
+| `language` | `en` | テンプレート言語 |
 
 ## テンプレートのカスタマイズ
 
-デフォルトテンプレートの出力セクション:
-
-- **今日のハイライト** — その日の主な成果
-- **プロジェクト別タスク** — プロジェクトごとの TODO 進捗（`[x]` 完了 / `[-]` 進行中 / `[ ]` ブロック）
-- **学び・発見** — 技術的な知見やデバッグの教訓
-- **ネクストアクション** — 翌日以降にやるべきこと
-
-カスタムテンプレートを使う場合:
+テンプレートは YAML フロントマター + `<!-- -->` 指示付き Markdown 形式です。カスタマイズするには:
 
 ```bash
-cp cc-daily-report/skills/daily-report/templates/ja.md ~/.claude/daily-report-template.md
+cp cc-session-tools/skills/daily-report/templates/ja.md ~/.claude/daily-report-template.md
 ```
 
-同じフォーマット（YAML フロントマター + `<!-- -->` 指示付き Markdown）で独自テンプレートを作成できます。
+対応する `config.json` の `templatePath` にパスを設定してください。
 
+## License
+
+MIT

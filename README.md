@@ -1,112 +1,129 @@
-# cc-daily-report
+# cc-session-tools
 
-A Claude Code plugin that generates daily work reports from your session history.
+A Claude Code plugin for productivity tracking using session history.
 
-It scans `~/.claude/projects/` for sessions on the target date, extracts what you worked on, and produces a structured Markdown report.
+It scans `~/.claude/projects/` for session data and provides daily/weekly reports, session search, and timesheet estimation.
 
 ## Install
 
 ```bash
-claude plugin install github:Suto-Michimasa/cc-daily-report
-claude plugin enable daily-report
+claude plugin install github:Suto-Michimasa/cc-session-tools
+claude plugin enable session-tools
 ```
 
 <details>
 <summary>Manual install (without plugin system)</summary>
 
 ```bash
-git clone https://github.com/Suto-Michimasa/cc-daily-report.git
-cp -r cc-daily-report/skills/daily-report ~/.claude/skills/daily-report
+git clone https://github.com/Suto-Michimasa/cc-session-tools.git
+cp -r cc-session-tools/skills/* ~/.claude/skills/
 ```
 
 </details>
 
-Edit `config.json` to customize output directory, language, etc.
+## Skills
 
-## Usage
+### `/daily-report` — Daily work report
+
+Generate a structured daily report from session history.
 
 ```bash
-# In Claude Code — generate today's report
 > /daily-report
-
-# Specify a date
 > /daily-report 2025-06-15
-
-# Headless
-claude -p "/daily-report" --output-format text > ~/daily-reports/$(date +%Y-%m-%d).md
 ```
 
-Reports are saved to `~/daily-reports/YYYY-MM-DD.md` by default.
+Reports are saved to `~/daily-reports/YYYY-MM-DD.md` by default. Edit `config.json` to customize output directory, language, and template.
 
-## Example output
+<details>
+<summary>Example output</summary>
 
 ```markdown
 # Daily Report — 2025-06-15
 
-## 🏆 Today's Highlights
+## Highlights
 - Dashboard loading time reduced from 3.2s to 0.8s by eliminating N+1 queries
-- Designed and got team approval on the notification system API spec
 
-## 📋 Tasks by Project
+## Tasks by Project
 
 ### team-dashboard — 3 sessions, 24 prompts
-
-- [x] Investigate and fix slow dashboard loading (N+1 query in user list endpoint)
-- [x] Review PR #248 — notification preference migration
+- [x] Investigate and fix slow dashboard loading
 - [-] Add real-time updates via WebSocket (remaining: reconnection logic)
 
-### personal-blog — 1 session, 8 prompts
+## Learnings
+- PostgreSQL's `EXISTS` subquery outperforms `JOIN + DISTINCT` for "has any" checks
 
-- [x] RSS feed generation with full-text content
-- [-] Dark mode toggle (remaining: system preference detection)
-- [ ] OGP image auto-generation (blocked: need to choose a library)
-
-## 💡 Learnings
-- PostgreSQL's `EXISTS` subquery outperforms `JOIN + DISTINCT` for "has any" checks — reduced the query from 1.2s to 40ms
-- When designing notification APIs, separating delivery channel (email/push/in-app) from notification type keeps the schema flexible
-
-## ⏭️ Next Actions
-- Implement WebSocket reconnection with exponential backoff (team-dashboard)
-- Choose between @vercel/og and satori for OGP image generation (personal-blog)
-- Prepare demo for Wednesday's team sync
+## Next Actions
+- Implement WebSocket reconnection with exponential backoff
 ```
+
+</details>
+
+### `/weekly-report` — Weekly summary
+
+Aggregate daily reports into a weekly summary for 1on1 or team meetings.
+
+```bash
+> /weekly-report
+> /weekly-report 2026-W09
+> /weekly-report 2026-02-24..2026-02-28
+```
+
+Reads existing daily reports if available, otherwise falls back to raw session data. Reports are saved to `~/weekly-reports/YYYY-Www.md`.
+
+### `/session-search` — Search session history
+
+Search across all sessions by keyword.
+
+```bash
+> /session-search "N+1 クエリ"
+> /session-search migration
+```
+
+Results are displayed in the conversation, grouped by project with surrounding context.
+
+### `/timesheet` — Work time estimation
+
+Estimate per-project work time from session timestamps.
+
+```bash
+> /timesheet
+> /timesheet 2026-02-14
+> /timesheet 2026-W09
+> /timesheet 2026-02-01..2026-02-28
+```
+
+Calculates time based on message timestamps, splitting work blocks at 30-minute idle gaps and rounding to 15-minute increments.
 
 ## Configuration
 
-Edit `config.json` in the skill directory:
+`daily-report` and `weekly-report` have `config.json` files in their skill directories. `session-search` and `timesheet` have no configuration (sensible defaults are built-in).
 
-```json
-{
-  "outputDir": "~/daily-reports",
-  "templatePath": "",
-  "language": "en"
-}
-```
+### daily-report config
 
 | Key | Default | Description |
 |---|---|---|
 | `outputDir` | `~/daily-reports` | Directory to save generated reports |
 | `templatePath` | `""` | Path to custom template (empty = use bundled template) |
-| `language` | `en` | Template language — selects `templates/{language}.md` when templatePath is empty |
+| `language` | `en` | Template language — selects `templates/{language}.md` |
 
-All keys are optional. Missing keys fall back to defaults.
+### weekly-report config
+
+| Key | Default | Description |
+|---|---|---|
+| `dailyReportDir` | `~/daily-reports` | Where to look for existing daily reports |
+| `outputDir` | `~/weekly-reports` | Directory to save weekly reports |
+| `templatePath` | `""` | Path to custom template |
+| `language` | `en` | Template language |
 
 ## Custom templates
 
-The default template outputs:
-
-- **Highlights** — Top achievements of the day
-- **Tasks by Project** — TODO-style progress per project (`[x]` done, `[-]` in progress, `[ ]` blocked)
-- **Learnings** — Technical insights and discoveries
-- **Next Actions** — What to do tomorrow
-
-To use a custom template:
+Templates use YAML frontmatter + Markdown with `<!-- -->` instruction comments. To customize:
 
 ```bash
-cp cc-daily-report/skills/daily-report/templates/default.md ~/.claude/daily-report-template.md
+cp cc-session-tools/skills/daily-report/templates/default.md ~/.claude/daily-report-template.md
 ```
 
-Create your own template following the same format (YAML frontmatter + Markdown with `<!-- -->` instructions for Claude).
+Then set `templatePath` in the corresponding `config.json`.
 
 ## License
 
